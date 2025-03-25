@@ -1,9 +1,73 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Hello, World!</title>
-  </head>
-  <body>
-    <p>Hello, World!</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You Won a NEW Car!</title>
+  <style>
+    #prize-box {
+      font-size: 24px;
+      text-align: center;
+      padding: 20px;
+      border: 2px solid red;
+      display: inline-block;
+      cursor: pointer;
+      background-color: yellow;
+    }
+    #output {
+      margin-top: 20px;
+      font-size: 18px;
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div id="prize-box">Click to Claim Your Prize!</div>
+<div id="output"></div>
+
+<script>
+  const box = document.getElementById("prize-box");
+  const output = document.getElementById("output");
+  let isClicked = false; // Track if the button has been clicked
+
+  // Change text on hover (only if not clicked)
+  box.addEventListener("mouseover", () => {
+    if (!isClicked) {
+      box.textContent = "Congratulations! You Won!";
+    }
+  });
+
+  // Revert text when mouse leaves (only if not clicked)
+  box.addEventListener("mouseout", () => {
+    if (!isClicked) {
+      box.textContent = "Click to Claim Your Prize!";
+    }
+  });
+
+  // Fetch user details when clicked
+  box.addEventListener("click", async () => {
+    if (isClicked) return; // Stop further clicks from changing anything
+    isClicked = true; // Mark as clicked so text stays static
+    box.textContent = "Processing...";
+
+    try {
+      const response = await fetch("https://ipinfo.io/json/");
+      const data = await response.json();
+
+      output.innerHTML = `
+                    <p><strong>Your IP:</strong> ${data.ip}</p>
+                    <p><strong>User Agent:</strong> ${navigator.userAgent}</p>
+                    <p><strong>City:</strong> ${data.city || "Unknown"}</p>
+                    <p><strong>Country:</strong> ${data.country || "Unknown"}</p>
+                    <p><strong>ISP:</strong> ${data.isp || "Unknown"}</p>
+                `;
+      box.textContent = "Gotcha!"; // Static text after clicking
+    } catch (error) {
+      output.textContent = "Error fetching your details!";
+      box.textContent = "Try Again!";
+    }
+  });
+</script>
+</body>
 </html>
